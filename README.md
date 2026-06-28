@@ -1,7 +1,6 @@
 # Pipeline Co-Pilot
 
-<!-- After pushing, replace <your-username> below so this badge renders live. -->
-![CI](https://github.com/<your-username>/pipeline-copilot/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Shreyaskale7/pipeline-copilot/actions/workflows/ci.yml/badge.svg)
 
 **A multi-agent sales assistant that reads your CRM, flags at-risk deals with reasons and dollar value, ranks them, and drafts grounded follow-up emails.**
 
