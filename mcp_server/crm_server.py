@@ -35,6 +35,10 @@ from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
+# Grounding guardrail (deterministic) — exposed below as check_email_grounding so
+# the Writer can self-check a draft before showing it to the rep.
+from guardrails import check_grounded
+
 # ---------------------------------------------------------------------------
 # Configuration / constants
 # ---------------------------------------------------------------------------
@@ -270,6 +274,27 @@ def log_activity(deal_id: str, summary: str, auth_token: str) -> dict:
     # 4) Log it — redact() keeps any email in the summary out of the log line.
     log.info(redact(f"log_activity OK {activity_id} on {deal_id}: {summary}"))
     return {"status": "ok", **record}
+
+
+@mcp.tool()
+def check_email_grounding(deal_id: str, email_text: str) -> dict:
+    """Verify a drafted email is grounded in the deal's real data (no hallucinated
+    prices, contacts, discounts, or promises).
+
+    The Writer calls this on its own draft BEFORE showing the rep, then revises if
+    any violation comes back. This is a deterministic safety net — it does not use
+    an LLM, so it cannot itself hallucinate.
+
+    Returns:
+        {"grounded": bool, "violations": [str, ...]} — or {"error": ...} if the
+        deal id is unknown.
+    """
+    for deal in _load_deals():
+        if deal["id"].lower() == deal_id.strip().lower():
+            result = check_grounded(email_text, deal)
+            log.info(redact(f"check_email_grounding({deal_id}) -> grounded={result['grounded']}"))
+            return result
+    return {"error": f"No deal found with id '{deal_id}'."}
 
 
 if __name__ == "__main__":

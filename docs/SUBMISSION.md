@@ -30,6 +30,8 @@ git push -u origin main
 Then open the repo in a browser and confirm:
 - `.env` is **absent**, `.env.example` is present.
 - `README.md` renders correctly.
+- In `README.md`, replace `<your-username>` in the CI badge URL with your GitHub
+  username so the green CI badge renders. (CI runs automatically on push.)
 
 ## Step 3 — Create the Kaggle Writeup
 1. On the competition page, click **New Writeup**.

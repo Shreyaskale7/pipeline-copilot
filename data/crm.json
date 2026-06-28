@@ -1,5 +1,5 @@
 {
-  "_comment": "Mock CRM. Dates are relative to the build date (2026-06-26). Risk is computed at runtime against the REAL today by mcp_server/crm_server.py::risk_assessment, so D-1002 and D-1003 are the clearly at-risk deals (stale > 14 days and/or past close date) while the others look healthy.",
+  "_comment": "Mock CRM. Dates are relative to the build date (late June 2026). Risk is computed at runtime against the REAL today by mcp_server/crm_server.py::risk_assessment. By design there are 5 at-risk deals; ranked by value at risk the order is D-1002 ($120k), D-1006 ($75k), D-1009 ($54k), D-1011 ($40k), D-1003 ($32k). The rest look healthy. evals/expected.json encodes this as the golden answer the eval harness checks.",
   "deals": [
     {
       "id": "D-1001",
@@ -65,6 +65,97 @@
       "last_activity_date": "2026-06-26",
       "close_date": "2026-06-30",
       "notes": "Order form sent and Will confirmed signature this week. Healthy - just monitor."
+    },
+    {
+      "id": "D-1006",
+      "name": "Wayne Enterprises - Security Suite",
+      "account": "Wayne Enterprises",
+      "stage": "Proposal",
+      "amount": 75000,
+      "owner": "Marcus Lee",
+      "primary_contact": "Bruce Diaz",
+      "contact_email": "bruce.diaz@wayne.example.com",
+      "last_activity_date": "2026-06-08",
+      "close_date": "2026-07-20",
+      "notes": "Champion Bruce is sold, but procurement has gone dark for two weeks. Need to re-engage procurement and confirm the security review timeline."
+    },
+    {
+      "id": "D-1007",
+      "name": "Hooli - Analytics Pilot",
+      "account": "Hooli",
+      "stage": "Discovery",
+      "amount": 15000,
+      "owner": "Priya Nair",
+      "primary_contact": "Gavin Reese",
+      "contact_email": "gavin.reese@hooli.example.com",
+      "last_activity_date": "2026-06-27",
+      "close_date": "2026-08-15",
+      "notes": "Intro call done and went well. Sending a tailored demo agenda for next week."
+    },
+    {
+      "id": "D-1008",
+      "name": "Cyberdyne - Platform Migration",
+      "account": "Cyberdyne Systems",
+      "stage": "Negotiation",
+      "amount": 96000,
+      "owner": "Marcus Lee",
+      "primary_contact": "Sarah Kohl",
+      "contact_email": "sarah.kohl@cyberdyne.example.com",
+      "last_activity_date": "2026-06-26",
+      "close_date": "2026-07-25",
+      "notes": "MSA is in legal review and on track. Sarah confirmed the migration timeline last week."
+    },
+    {
+      "id": "D-1009",
+      "name": "Soylent Corp - Annual Renewal",
+      "account": "Soylent Corp",
+      "stage": "Closing",
+      "amount": 54000,
+      "owner": "Priya Nair",
+      "primary_contact": "Dev Mehta",
+      "contact_email": "dev.mehta@soylent.example.com",
+      "last_activity_date": "2026-06-10",
+      "close_date": "2026-07-05",
+      "notes": "Renewal quote sent. Dev was supportive then went quiet heading into quarter-end. Nudge him for signature before the renewal date."
+    },
+    {
+      "id": "D-1010",
+      "name": "Pied Piper - Compression Add-on",
+      "account": "Pied Piper",
+      "stage": "Negotiation",
+      "amount": 28000,
+      "owner": "Priya Nair",
+      "primary_contact": "Richard Liu",
+      "contact_email": "richard.liu@piedpiper.example.com",
+      "last_activity_date": "2026-06-22",
+      "close_date": "2026-07-12",
+      "notes": "Negotiating term length. Agreed to follow up right after their board meeting this week."
+    },
+    {
+      "id": "D-1011",
+      "name": "Vandelay Industries - Pilot",
+      "account": "Vandelay Industries",
+      "stage": "Proposal",
+      "amount": 40000,
+      "owner": "Marcus Lee",
+      "primary_contact": "Elaine Park",
+      "contact_email": "elaine.park@vandelay.example.com",
+      "last_activity_date": "2026-05-28",
+      "close_date": "2026-06-20",
+      "notes": "Proposal stalled and the close date passed. Our champion changed roles - need to find the new economic buyer before this can move."
+    },
+    {
+      "id": "D-1012",
+      "name": "Tyrell Corp - Expansion",
+      "account": "Tyrell Corp",
+      "stage": "Discovery",
+      "amount": 22000,
+      "owner": "Marcus Lee",
+      "primary_contact": "Roy Vance",
+      "contact_email": "roy.vance@tyrell.example.com",
+      "last_activity_date": "2026-06-28",
+      "close_date": "2026-09-01",
+      "notes": "Early-stage opportunity. Currently scoping requirements with Roy's team."
     }
   ]
 }

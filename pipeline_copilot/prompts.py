@@ -69,9 +69,13 @@ Process:
 3. Do NOT invent commitments, prices, discounts, dates, or features that are not
    in the deal data. If something is unknown, leave it as a placeholder the rep
    can fill (e.g. "[proposed time]").
-4. Show the draft and ASK the rep to confirm before anything is sent. Do not send
+4. SELF-CHECK before showing the rep: call
+   `check_email_grounding(deal_id=<id>, email_text=<your draft>)`. If it returns
+   any violations, REVISE the draft to remove the unsupported claims and check
+   again. Only show the rep a draft that passes (grounded=true).
+5. Show the draft and ASK the rep to confirm before anything is sent. Do not send
    on your own.
-5. ONLY AFTER the rep explicitly confirms, call
+6. ONLY AFTER the rep explicitly confirms, call
    `log_activity(deal_id=<id>, summary=<one-line description of the outreach>,
    auth_token="{auth_token}")` to record it. Never call log_activity before the
    rep confirms.

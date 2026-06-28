@@ -89,7 +89,7 @@ The agents never read `crm.json` directly — they only see the MCP tool surface
 ### The four key concepts
 
 1. **Multi-agent system** — coordinator + Analyst + Writer in `pipeline_copilot/agent.py`, instructions in `prompts.py`.
-2. **Custom MCP server** — `mcp_server/crm_server.py` exposes `get_deals`, `get_deal_details`, `log_activity`.
+2. **Custom MCP server** — `mcp_server/crm_server.py` exposes `get_deals`, `get_deal_details`, `log_activity`, and `check_email_grounding`.
 3. **Deployability** — `Dockerfile`, documented `gcloud run deploy --source .`.
 4. **Security feature** — `auth_token` gate on the only write + `redact()` PII masking on every log line.
 
@@ -98,6 +98,8 @@ The agents never read `crm.json` directly — they only see the MCP tool surface
 - **The risk rule is a pure function** (`risk_assessment`) with an injectable `today`, so it's unit-tested deterministically and lives independently of the LLM. Agents reason *about* risk; they don't *invent* it.
 - **Grounding is enforced by instruction and tool design.** The Writer must call `get_deal_details` before drafting, and the compact `get_deals` output deliberately omits free-text notes so the Analyst fetches them when it needs to justify an action.
 - **Human-in-the-loop on writes.** The Writer drafts, asks the rep to confirm, and only then calls `log_activity`. The write itself is auth-gated.
+- **A grounding guardrail closes the hallucination gap.** Prompting alone can't *guarantee* the Writer won't invent a price or discount, so a deterministic check (`check_email_grounding`) inspects each draft and forces a revision before the rep ever sees it.
+- **Evals make "correct" measurable.** An eval harness scores the two judgement calls — risk ranking vs a golden answer, and the guardrail's catch rate on hallucinated emails — and runs in CI so regressions can't sneak in.
 
 ## Security
 
@@ -116,10 +118,10 @@ The agents never read `crm.json` directly — they only see the MCP tool surface
 
 ## What's next
 
-- Back the MCP server with a **real CRM API** (Salesforce/HubSpot) behind the same three tools.
+- Back the MCP server with a **real CRM API** (Salesforce/HubSpot) behind the same tools.
 - Add a **scheduler** so the Analyst runs a daily morning triage and pushes the top three risks.
 - Expand the security model from a shared token to **per-user OAuth scopes**.
-- Add an **eval harness** that scores the Analyst's rankings and the Writer's groundedness against a labeled set.
+- Grow the eval set into a larger **labeled benchmark** and add an LLM-judge eval for email tone/quality alongside the deterministic groundedness check.
 
 ---
 

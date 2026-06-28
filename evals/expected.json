@@ -1,0 +1,4 @@
+{
+  "_comment": "Golden answer for the eval harness. This is the at-risk deal set the risk logic SHOULD produce from data/crm.json, ranked by dollar value at risk (highest first). If someone changes the data or the rule and the ranking drifts, evals/run_evals.py fails and CI catches it.",
+  "ranked_at_risk_ids": ["D-1002", "D-1006", "D-1009", "D-1011", "D-1003"]
+}

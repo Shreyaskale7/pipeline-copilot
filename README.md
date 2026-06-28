@@ -1,5 +1,8 @@
 # Pipeline Co-Pilot
 
+<!-- After pushing, replace <your-username> below so this badge renders live. -->
+![CI](https://github.com/<your-username>/pipeline-copilot/actions/workflows/ci.yml/badge.svg)
+
 **A multi-agent sales assistant that reads your CRM, flags at-risk deals with reasons and dollar value, ranks them, and drafts grounded follow-up emails.**
 
 Built for the **Kaggle AI Agents Intensive — Vibe Coding capstone (Agents for Business track)** with Google's [Agent Development Kit (ADK)](https://google.github.io/adk-docs/) and a custom [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server.
@@ -70,7 +73,7 @@ The agents never touch `crm.json` directly — they only see the MCP tool surfac
 | # | Key concept | Where it's implemented |
 |---|---|---|
 | 1 | **Multi-agent system (ADK)** | [`pipeline_copilot/agent.py`](pipeline_copilot/agent.py) — coordinator `root_agent` with `sub_agents=[analyst_agent, writer_agent]`; instructions in [`prompts.py`](pipeline_copilot/prompts.py) |
-| 2 | **Custom MCP server** | [`mcp_server/crm_server.py`](mcp_server/crm_server.py) — `FastMCP` exposing `get_deals`, `get_deal_details`, `log_activity` over stdio |
+| 2 | **Custom MCP server** | [`mcp_server/crm_server.py`](mcp_server/crm_server.py) — `FastMCP` exposing `get_deals`, `get_deal_details`, `log_activity`, `check_email_grounding` over stdio |
 | 3 | **Deployability** | [`Dockerfile`](Dockerfile) — `python:3.12-slim`, Cloud Run-ready `adk api_server` entrypoint |
 | 4 | **Security feature** | [`crm_server.py`](mcp_server/crm_server.py) — `auth_token` gate on the `log_activity` write + `redact()` PII masking on every log line |
 
@@ -102,15 +105,18 @@ adk run pipeline_copilot
 
 In the web UI, select **`pipeline_copilot`** and try:
 
-- **"What deals are at risk?"** → the Analyst lists D-1002 ($120k) and D-1003 ($32k), ranked, with reasons.
+- **"What deals are at risk?"** → the Analyst returns the at-risk deals ranked by value at risk (D-1002 $120k first), each with reasons.
 - **"What should I do first?"** → ranked priorities with one next-best action each.
-- **"Draft a follow-up for D-1003."** → the Writer pulls the real notes/contact and drafts a < 120-word email, then asks you to confirm before logging it.
+- **"Draft a follow-up for D-1003."** → the Writer pulls the real notes/contact, self-checks the draft for grounding, then asks you to confirm before logging it.
 
-### Run the tests
+### Tests & evals
 
 ```bash
-pytest            # unit tests for the pure risk logic
+pytest                      # unit tests: risk logic + grounding guardrail + evals
+python evals/run_evals.py   # eval scorecard: risk ranking vs golden answer + groundedness
 ```
+
+Both are deterministic (no API key needed) and run in CI on every push.
 
 ---
 
@@ -143,6 +149,14 @@ The container runs `adk api_server . --host 0.0.0.0 --port $PORT`; Cloud Run inj
 
 ---
 
+## Quality & safety
+
+Beyond the four required concepts, the project takes correctness seriously:
+
+- **Grounding guardrail.** The Writer self-checks every draft via `check_email_grounding` (a deterministic check in [`guardrails.py`](mcp_server/guardrails.py)) and revises before showing the rep — so it can't slip in an invented price, contact, or discount.
+- **Eval harness.** [`evals/run_evals.py`](evals/run_evals.py) scores the agent's two judgement calls against a golden answer: (1) does the risk logic flag and rank the right deals, and (2) does the guardrail correctly catch hallucinated emails. Deterministic, no key needed.
+- **CI.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the full test suite + eval harness on every push, so regressions are caught automatically.
+
 ## Repo layout
 
 ```
@@ -153,25 +167,36 @@ pipeline-copilot/
 ├── .gitignore                # ignores .env, venv, caches, activity log
 ├── .dockerignore
 ├── Dockerfile                # Cloud Run-ready image
+├── .github/workflows/ci.yml  # CI: tests + eval harness on every push
 ├── data/
-│   └── crm.json              # mock CRM (5 deals; 2 at-risk by design)
+│   └── crm.json              # mock CRM (12 deals; 5 at-risk by design)
 ├── mcp_server/
-│   └── crm_server.py         # MCP server: tools + risk logic + security
+│   ├── crm_server.py         # MCP server: tools + risk logic + security
+│   └── guardrails.py         # deterministic grounding check for the Writer
 ├── pipeline_copilot/
 │   ├── __init__.py           # exposes root_agent (ADK discovery contract)
 │   ├── agent.py              # coordinator + Analyst + Writer + MCP toolset
 │   └── prompts.py            # all agent instructions
+├── evals/
+│   ├── expected.json         # golden answer (ranked at-risk deals)
+│   └── run_evals.py          # eval scorecard: risk ranking + groundedness
 ├── tests/
-│   └── test_risk.py          # unit tests for the pure risk function
+│   ├── test_risk.py          # unit tests for the pure risk function
+│   ├── test_guardrails.py    # unit tests for the grounding guardrail
+│   ├── test_evals.py         # runs the eval harness in CI
+│   └── _verify_mcp_roundtrip.py  # keyless end-to-end tool check
 └── docs/
     ├── WRITEUP.md            # Kaggle writeup draft
-    └── VIDEO_SCRIPT.md       # 5-minute demo video script + shot list
+    ├── VIDEO_SCRIPT.md       # 5-minute demo video script + shot list
+    ├── SUBMISSION.md         # step-by-step submission guide
+    ├── thumbnail.png         # Kaggle writeup card image
+    └── make_thumbnail.py     # regenerates the thumbnail
 ```
 
 ---
 
 ## Notes & assumptions
 
-- **Dates are relative to the build date (2026-06-26).** Risk is computed at runtime against the real `today`, so D-1002 and D-1003 are the clearly at-risk deals. If you run this much later, more deals may read as "stale" — that's the rule working, not a bug.
+- **Dates are relative to the build date (late June 2026).** Risk is computed at runtime against the real `today`, so by design 5 of the 12 deals are at risk (D-1002 leads at $120k). If you run this much later, more deals may read as "stale" — that's the rule working, not a bug. The expected ranking is pinned in `evals/expected.json`.
 - **Model:** `gemini-2.5-flash` (fallback `gemini-flash-latest`).
 - **The MCP server is launched with the current Python interpreter** (`sys.executable`) rather than a hard-coded `python3`, so it works on Windows as well as macOS/Linux.
