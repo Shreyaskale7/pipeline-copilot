@@ -1,0 +1,70 @@
+{
+  "_comment": "Mock CRM. Dates are relative to the build date (2026-06-26). Risk is computed at runtime against the REAL today by mcp_server/crm_server.py::risk_assessment, so D-1002 and D-1003 are the clearly at-risk deals (stale > 14 days and/or past close date) while the others look healthy.",
+  "deals": [
+    {
+      "id": "D-1001",
+      "name": "Acme Corp - Platform Renewal",
+      "account": "Acme Corp",
+      "stage": "Negotiation",
+      "amount": 48000,
+      "owner": "Priya Nair",
+      "primary_contact": "Dana Whitfield",
+      "contact_email": "dana.whitfield@acme.example.com",
+      "last_activity_date": "2026-06-24",
+      "close_date": "2026-07-15",
+      "notes": "Sent redlined MSA; their legal is reviewing. Dana asked for the SOC 2 report to clear a security questionnaire - owe it to her by Friday."
+    },
+    {
+      "id": "D-1002",
+      "name": "Globex - Data Warehouse Expansion",
+      "account": "Globex",
+      "stage": "Proposal",
+      "amount": 120000,
+      "owner": "Marcus Lee",
+      "primary_contact": "Tom Becker",
+      "contact_email": "t.becker@globex.example.com",
+      "last_activity_date": "2026-06-01",
+      "close_date": "2026-07-10",
+      "notes": "Proposal sent 3+ weeks ago with no reply. Tom said budget approval is pending with the CFO. Should check in and offer to present the ROI model to finance."
+    },
+    {
+      "id": "D-1003",
+      "name": "Initech - Onboarding Add-on",
+      "account": "Initech",
+      "stage": "Negotiation",
+      "amount": 32000,
+      "owner": "Priya Nair",
+      "primary_contact": "Samir Patel",
+      "contact_email": "samir.patel@initech.example.com",
+      "last_activity_date": "2026-06-05",
+      "close_date": "2026-06-15",
+      "notes": "Verbal yes on the add-on but the close date already slipped. Samir is waiting on updated pricing for 50 seats - that pricing sheet is the only thing blocking signature."
+    },
+    {
+      "id": "D-1004",
+      "name": "Umbrella Health - Pilot",
+      "account": "Umbrella Health",
+      "stage": "Discovery",
+      "amount": 18000,
+      "owner": "Marcus Lee",
+      "primary_contact": "Lena Ortiz",
+      "contact_email": "lena.ortiz@umbrella.example.com",
+      "last_activity_date": "2026-06-25",
+      "close_date": "2026-08-01",
+      "notes": "Demo went well. Lena is looping in her director next week. Next step is to schedule the technical deep-dive."
+    },
+    {
+      "id": "D-1005",
+      "name": "Stark Industries - Seat Upsell",
+      "account": "Stark Industries",
+      "stage": "Closing",
+      "amount": 26000,
+      "owner": "Priya Nair",
+      "primary_contact": "Will Tan",
+      "contact_email": "will.tan@stark.example.com",
+      "last_activity_date": "2026-06-26",
+      "close_date": "2026-06-30",
+      "notes": "Order form sent and Will confirmed signature this week. Healthy - just monitor."
+    }
+  ]
+}

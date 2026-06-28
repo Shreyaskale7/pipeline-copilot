@@ -1,0 +1,19 @@
+# Secrets — never commit real keys. Only .env.example is tracked.
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local databases / activity logs (may contain customer notes)
+*.db
+data/activity_log.jsonl
+
+# ADK working/session state
+.adk/
+
+# OS / editor noise
+.DS_Store
+.pytest_cache/

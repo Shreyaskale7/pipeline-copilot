@@ -1,0 +1,7 @@
+# Pinned to ADK 2.x (June 2026). See README for the verified API patterns.
+google-adk[mcp]>=2.0.0
+mcp>=1.2.0
+python-dotenv>=1.0.0
+
+# Test-only (used by tests/test_risk.py)
+pytest>=8.0.0
